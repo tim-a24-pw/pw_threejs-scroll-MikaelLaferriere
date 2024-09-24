@@ -76,6 +76,7 @@ export default class Experience {
     this.gltfLoader.load('assets/models/ac/scene.gltf', (gltf) => {
       this.model = gltf.scene;
       this.model.scale.set(0.005, 0.005, 0.005);
+      this.model.rotation.x = 1.5;
       this.scene.add(this.model);
     });
   }
