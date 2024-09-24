@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default class Experience {
   constructor() {
@@ -9,6 +10,7 @@ export default class Experience {
     };
 
     this.canvas = document.querySelector('.webgl');
+    this.gltfLoader = new GLTFLoader();
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
 
@@ -22,6 +24,7 @@ export default class Experience {
     });
 
     this.createCamera();
+    this.createLights();
     this.createObjects();
     this.createRenderer();
     this.animate();
@@ -42,6 +45,15 @@ export default class Experience {
     this.scene.add(this.camera);
   }
 
+  createLights() {
+    const ambientLight = new THREE.AmbientLight('#ffffff', 0.8);
+    this.scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight('#ffffff', 4);
+    directionalLight.position.set(1, 2, 5);
+    this.scene.add(directionalLight);
+  }
+
   createRenderer() {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -59,7 +71,13 @@ export default class Experience {
     });
     this.cube = new THREE.Mesh(geometry, material); // on applique la forme et le materiel pour faire un mesh
     this.cube.position.x = 2;
-    this.scene.add(this.cube);
+    //this.scene.add(this.cube);
+
+    this.gltfLoader.load('assets/models/ac/scene.gltf', (gltf) => {
+      this.model = gltf.scene;
+      this.model.scale.set(0.005, 0.005, 0.005);
+      this.scene.add(this.model);
+    });
   }
 
   resize() {
@@ -93,11 +111,10 @@ export default class Experience {
       const target = entry.target;
 
       if (entry.isIntersecting) {
-        const posX = (Math.random() - 0.5) * 4;
         gsap.to(this.cube.position, {
           duration: 1,
           ease: 'Power2.inOut',
-          x: posX,
+          x: target.dataset.p,
         });
       }
     }
